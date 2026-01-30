@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScuolaHub - Il tuo portale scolastico</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        * { font-family: 'Poppins', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+        .section { display: none; }
+        .section.active { display: block; }
+        .nav-item.active { background: rgba(255,255,255,0.2); border-left: 4px solid white; }
+        .message-bubble { animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .notification-badge { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .login-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); }
+        .toggle-switch { transition: all 0.3s ease; }
+        .toggle-switch.active { background-color: #8b5cf6; }
+        .toggle-switch.active .toggle-dot { transform: translateX(24px); }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+    <!-- LOGIN PAGE -->
+    <div id="login-page" class="login-bg min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden max-w-4xl w-full flex flex-col md:flex-row">
+            <!-- Left Side - Branding -->
+            <div class="gradient-bg p-8 md:p-12 text-white md:w-1/2 flex flex-col justify-center">
+                <div class="text-center md:text-left">
+                    <div class="flex items-center justify-center md:justify-start gap-3 mb-6">
+                        <i class="fas fa-graduation-cap text-4xl"></i>
+                        <h1 class="text-3xl font-bold">ScuolaHub</h1>
+                    </div>
+                    <p class="text-xl mb-4">Il tuo portale scolastico</p>
+                    <p class="text-white/70 text-sm">Circolari, orari, attività e molto altro. Tutto in un unico posto!</p>
+                    
+                    <div class="mt-8 space-y-3 text-sm">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Leggi le circolari in tempo reale</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Firma le attività digitalmente</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Chatta con i rappresentanti</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Consulta l'orario scolastico</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side - Login Form -->
+            <div class="p-8 md:p-12 md:w-1/2">
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Bentornato! 👋</h2>
+                <p class="text-gray-500 mb-8">Accedi al tuo account per continuare</p>
+
+                <form id="login-form" onsubmit="handleLogin(event)">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2">Email Scolastica</label>
+                        <div class="relative">
+                            <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="email" id="login-email" required 
+                                class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                placeholder="nome.cognome@studenti.scuola.it">
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-medium mb-2">Password</label>
+                        <div class="relative">
+                            <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="password" id="login-password" required 
+                                class="w-full pl-12 pr-12 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                placeholder="••••••••">
+                            <button type="button" onclick="togglePassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-eye" id="password-toggle-icon"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between mb-6">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="remember-me" class="w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500">
+                            <span class="text-sm text-gray-600">Ricordami</span>
+                        </label>
+                        <a href="#" class="text-sm text-purple-600 hover:text-purple-700">Password dimenticata?</a>
+                    </div>
+
+                    <button type="submit" class="w-full gradient-bg text-white py-3 rounded-xl font-semibold hover:opacity-90 transition flex items-center justify-center gap-2">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Accedi
+                    </button>
+
+                    <div id="login-error" class="hidden mt-4 p-3 bg-red-100 text-red-600 rounded-lg text-sm text-center">
+                        <i class="fas fa-exclamation-circle mr-1"></i>
+                        <span>Credenziali non valide</span>
+                    </div>
+                </form>
+
+                <!-- Demo Users -->
+                <div class="mt-8 p-4 bg-gray-50 rounded-xl">
+                    <p class="text-sm text-gray-500 mb-3 font-medium">🔑 Account Demo:</p>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex justify-between items-center p-2 bg-white rounded-lg">
+                            <span class="text-gray-600">marco.rossi@studenti.scuola.it</span>
+                            <button onclick="fillDemo('marco.rossi@studenti.scuola.it', 'demo123')" class="text-purple-600 hover:text-purple-700 font-medium">Usa</button>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-white rounded-lg">
+                            <span class="text-gray-600">giulia.bianchi@studenti.scuola.it</span>
+                            <button onclick="fillDemo('giulia.bianchi@studenti.scuola.it', 'demo123')" class="text-purple-600 hover:text-purple-700 font-medium">Usa</button>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-white rounded-lg">
+                            <span class="text-gray-600">luca.verdi@studenti.scuola.it</span>
+                            <button onclick="fillDemo('luca.verdi@studenti.scuola.it', 'demo123')" class="text-purple-600 hover:text-purple-700 font-medium">Usa</button>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-2">Password per tutti: demo123</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP (hidden until login) -->
+    <div id="main-app" class="hidden">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 gradient-bg text-white z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300">
+            <div class="p-6 border-b border-white/20">
+                <h1 class="text-2xl font-bold flex items-center gap-2">
+                    <i class="fas fa-graduation-cap"></i>
+                    ScuolaHub
+                </h1>
+                <p class="text-sm text-white/70 mt-1">Anno 2024/2025</p>
+            </div>
+            
+            <!-- User Profile -->
+            <div class="p-4 border-b border-white/20 flex items-center gap-3">
+                <div id="sidebar-avatar" class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-xl">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div>
+                    <p class="font-semibold" id="sidebar-username">Nome Utente</p>
+                    <p class="text-xs text-white/70" id="sidebar-class">Classe</p>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="p-4 space-y-2">
+                <a href="#" onclick="showSection('home')" class="nav-item active flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition">
+                    <i class="fas fa-home w-5"></i> Home
+                </a>
+                <a href="#" onclick="showSection('circolari')" class="nav-item flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition">
+                    <i class="fas fa-bullhorn w-5"></i> Circolari
+                    <span class="notification-badge ml-auto bg-red-500 text-xs px-2 py-0.5 rounded-full">3</span>
+                </a>
+                <a href="#" onclick="showSection('orario')" class="nav-item flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition">
+                    <i class="fas fa-calendar-alt w-5"></i> Orario
+                </a>
+                <a href="#" onclick="showSection('attivita')" class="nav-item flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition">
+                    <i class="fas fa-clipboard-check w-5"></i> Attività
+                    <span class="notification-badge ml-auto bg-green-500 text-xs px-2 py-0.5 rounded-full">2</span>
+                </a>
+                <a href="#" onclick="showSection('rappresentanti')" class="nav-item flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition">
+                    <i class="fas fa-users w-5"></i> Rappresentanti
+                </a>
+                <a href="#" onclick="showSection('chat')" class="nav-item flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition">
+                    <i class="fas fa-comments w-5"></i> Chat
+                </a>
+            </nav>
+
+            <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-white/20 space-y-2">
+                <a href="#" onclick="showSection('impostazioni')" class="nav-item flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition text-white/70">
+                    <i class="fas fa-cog w-5"></i> Impostazioni
+                </a>
+                <a href="#" onclick="handleLogout()" class="flex items-center gap-3 p-3 rounded-lg hover:bg-red-500/30 transition text-white/70">
+                    <i class="fas fa-sign-out-alt w-5"></i> Esci
+                </a>
+            </div>
+        </aside>
+
+        <!-- Mobile Menu Button -->
+        <button onclick="toggleSidebar()" class="md:hidden fixed top-4 left-4 z-50 bg-purple-600 text-white p-3 rounded-lg shadow-lg">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Main Content -->
+        <main class="md:ml-64 p-4 md:p-8">
+            <!-- HOME Section -->
+            <section id="home" class="section active">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Benvenuto, <span id="home-username">Utente</span>! 👋</h2>
+                
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-2xl p-6 shadow-lg card-hover transition-all cursor-pointer" onclick="showSection('circolari')">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm">Circolari nuove</p>
+                                <p class="text-3xl font-bold text-purple-600">3</p>
+                            </div>
+                            <div class="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-bullhorn text-purple-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl p-6 shadow-lg card-hover transition-all cursor-pointer" onclick="showSection('attivita')">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm">Attività da firmare</p>
+                                <p class="text-3xl font-bold text-green-600">2</p>
+                            </div>
+                            <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-pen text-green-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl p-6 shadow-lg card-hover transition-all cursor-pointer" onclick="showSection('orario')">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm">Prossima lezione</p>
+                                <p class="text-xl font-bold text-blue-600">Matematica</p>
+                            </div>
+                            <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-clock text-blue-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl p-6 shadow-lg card-hover transition-all cursor-pointer" onclick="showSection('chat')">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm">Messaggi</p>
+                                <p class="text-3xl font-bold text-orange-600">5</p>
+                            </div>
+                            <div class="w-14 h-14 bg-orange-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-envelope text-orange-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-2xl p-6 shadow-lg">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-clock text-purple-600"></i> Attività Recenti
+                        </h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-4 p-3 bg-gray-50 rounded-xl">
+                                <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-file-alt text-purple-600"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-medium">Nuova circolare pubblicata</p>
+                                    <p class="text-sm text-gray-500">Assemblea d'istituto - 2 ore fa</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 p-3 bg-gray-50 rounded-xl">
+                                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-check text-green-600"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-medium">Hai firmato l'attività</p>
+                                    <p class="text-sm text-gray-500">Gita scolastica - Ieri</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 p-3 bg-gray-50 rounded-xl">
+                                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-comment text-blue-600"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-medium">Messaggio dal rappresentante</p>
+                                    <p class="text-sm text-gray-500">Luca Bianchi - 3 giorni fa</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-6 shadow-lg">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-calendar text-blue-600"></i> Oggi - Lezioni
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-4 p-3 border-l-4 border-blue-500 bg-blue-50 rounded-r-xl">
+                                <div class="text-center">
+                                    <p class="text-xs text-gray-500">08:00</p>
+                                    <p class="text-xs text-gray-500">09:00</p>
+                                </div>
+                                <div>
+                                    <p class="font-medium">Italiano</p>
+                                    <p class="text-sm text-gray-500">Prof.ssa Verdi</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 p-3 border-l-4 border-green-500 bg-green-50 rounded-r-xl">
+                                <div class="text-center">
+                                    <p class="text-xs text-gray-500">09:00</p>
+                                    <p class="text-xs text-gray-500">10:00</p>
+                                </div>
+                                <div>
+                                    <p class="font-medium">Matematica</p>
+                                    <p class="text-sm text-gray-500">Prof. Neri</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 p-3 border-l-4 border-purple-500 bg-purple-50 rounded-r-xl">
+                                <div class="text-center">
+                                    <p class="text-xs text-gray-500">10:00</p>
+                                    <p class="text-xs text-gray-500">11:00</p>
+                                </div>
+                                <div>
+                                    <p class="font-medium">Inglese</p>
+                                    <p class="text-sm text-gray-500">Prof.ssa White</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CIRCOLARI Section -->
+            <section id="circolari" class="section">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+                    <i class="fas fa-bullhorn text-purple-600"></i> Circolari
+                </h2>
+                
+                <div class="mb-6 flex flex-wrap gap-4">
+                    <input type="text" placeholder="Cerca circolare..." class="flex-1 min-w-64 px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <select class="px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <option>Tutte le categorie</option>
+                        <option>Avvisi</option>
+                        <option>Eventi</option>
+                        <option>Didattica</option>
+                    </select>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="bg-white rounded-2xl p-6 shadow-lg card-hover transition-all border-l-4 border-red-500">
+                        <div class="flex items-start justify-between flex-wrap gap-4">
+                            <div class="flex-1">
+                                <span class="bg-red-100 text-red-600 text-xs px-3 py-1 rounded-full font-medium">NUOVO</span>
+                                <h3 class="text-xl font-bold text-gray-800 mt-2">Circolare N. 45 - Assemblea d'Istituto</h3>
+                                <p class="text-gray-600 mt-2">Si comunica che il giorno 15 Novembre 2024 si terrà l'assemblea d'istituto dalle ore 9:00 alle ore 13:00...</p>
+                                <div class="flex items-center gap-4 mt-4 text-sm text-gray-500">
+                                    <span><i class="fas fa-calendar mr-1"></i> 10 Nov 2024</span>
+                                    <span><i class="fas fa-user mr-1"></i> Dirigente Scolastico</span>
+                                </div>
+                            </div>
+                            <button class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition">
+                                <i class="fas fa-eye mr-1"></i> Leggi
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-6 shadow-lg card-hover transition-all border-l-4 border-blue-500">
+                        <div class="flex items-start justify-between flex-wrap gap-4">
+                            <div class="flex-1">
+                                <span class="bg-blue-100 text-blue-600 text-xs px-3 py-1 rounded-full font-medium">NUOVO</span>
+                                <h3 class="text-xl font-bold text-gray-800 mt-2">Circolare N. 44 - Orientamento Universitario</h3>
+                                <p class="text-gray-600 mt-2">Incontro con le università del territorio per gli studenti delle classi quarte e quinte...</p>
+                                <div class="flex items-center gap-4 mt-4 text-sm text-gray-500">
+                                    <span><i class="fas fa-calendar mr-1"></i> 8 Nov 2024</span>
+                                    <span><i class="fas fa-user mr-1"></i> Prof. Rossi</span>
+                                </div>
+                            </div>
+                            <button class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition">
+                                <i class="fas fa-eye mr-1"></i> Leggi
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-6 shadow-lg card-hover transition-all border-l-4 border-green-500">
+                        <div class="flex items-start justify-between flex-wrap gap-4">
+                            <div class="flex-1">
+                                <span class="bg-green-100 text-green-600 text-xs px-3 py-1 rounded-full font-medium">NUOVO</span>
+                                <h3 class="text-xl font-bold text-gray-800 mt-2">Circolare N. 43 - Corso ECDL</h3>
+                                <p class="text-gray-600 mt-2">Apertura iscrizioni per il corso di certificazione ECDL. Posti limitati...</p>
+                                <div class="flex items-center gap-4 mt-4 text-sm text-gray-500">
+                                    <span><i class="fas fa-calendar mr-1"></i> 5 Nov 2024</span>
+                                    <span><i class="fas fa-user mr-1"></i> Segreteria</span>
+                                </div>
+                            </div>
+                            <button class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition">
+                                <i class="fas fa-eye mr-1"></i> Leggi
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-6 shadow-lg card-hover transition-all border-l-4 border-gray-300">
+                        <div class="flex items-start justify-between flex-wrap gap-4">
+                            <div class="flex-1">
+                                <span class="bg-gray-100 text-gray-600 text-xs px-3 py-1 rounded-full font-medium">LETTO</span>
+                                <h3 class="text-xl font-bold text-gray-800 mt-2">Circolare N. 42 - Ricevimento Genitori</h3>
+                                <p class="text-gray-600 mt-2">Calendario ricevimenti pomeridiani del primo quadrimestre...</p>
+                                <div class="flex items-center gap-4 mt-4 text-sm text-gray-500">
+                                    <span><i class="fas fa-calendar mr-1"></i> 1 Nov 2024</span>
+                                    <span><i class="fas fa-user mr-1"></i> Dirigente Scolastico</span>
+                                </div>
+                            </div>
+                            <button class="bg-gray-200 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-300 transition">
+                                <i class="fas fa-eye mr-1"></i> Leggi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ORARIO Section -->
+            <section id="orario" class="section">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+                    <i class="fas fa-calendar-alt text-blue-600"></i> Orario Settimanale - <span id="orario-class">4°A</span>
+                </h2>
+
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="gradient-bg text-white">
+                                <tr>
+                                    <th class="p-4 text-left">Ora</th>
+                                    <th class="p-4 text-center">Lunedì</th>
+                                    <th class="p-4 text-center">Martedì</th>
+                                    <th class="p-4 text-center">Mercoledì</th>
+                                    <th class="p-4 text-center">Giovedì</th>
+                                    <th class="p-4 text-center">Venerdì</th>
+                                    <th class="p-4 text-center">Sabato</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="p-4 font-medium text-gray-600">1° (8:00-9:00)</td>
+                                    <td class="p-3 text-center"><div class="bg-blue-100 text-blue-800 rounded-lg p-2"><strong>Italiano</strong><br><span class="text-xs">Verdi</span></div></td>
+                                    <td class="p-3 text-center"><div class="bg-green-100 text-green-800 rounded-lg p-2"><strong>Matematica</strong><br><span class="text-xs">Neri</span></div></td>
+                                    <td class="p-3 text-center"><div class="bg-purple-100 text-purple-800 rounded-lg p-2"><strong>Inglese</strong><br><span class="text-xs">White</span></div></td>
+                                    <td class="p-3 text-center"><div class="bg-yellow-100 text-yellow-800 rounded-lg p-2"><strong>Storia</strong><br><span class="text-xs">Bianchi</span></div></td>
+                                    <td class="p-3 text-center"><div class="bg-pink-100 text-pink-800 rounded-lg p-2"><strong>Filosofia</strong><br><span class="text-xs">Russo</span></div></td>
+                                    <td class="p-3 text-center"><div class="bg-orange-100 text-orange-800 rounded-lg p-2"><strong>Ed. Fisica</strong><br><span class="text-xs">Greco</span></div></td>
+                                </tr>
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="p-4 font-medium text-gray-600">2° (9:00-10:00)</td>
+                                    <td class="p-3 text-center"><div class="bg-green-100 text-green-800 rounded-lg p-2"><strong>Matematica</strong><br><span class="text-xs">Neri</span></div></td>
+                                    <td class="p-3 text-center"><div class="bg-blue-100 text-blue-800 rounded-lg p-2"><strong>Italiano</strong><br><span class="text-xs">Verdi</span></div></td>
+                                    <td class="p-3 text-center"><div class="bg-red-100 text-red-800 rounded-lg p-2"><strong>Fisica</strong><br><span class="text-xs">Ferrari</span></div></td>
+                                    <td class="p-3 text-center"><div class="bg-purple-100 text-purple-800 rounded-lg p-2"><strong>Inglese</strong><br><span class="text-xs">White</span></div></td>
+                                    <td class="p-3 text-center"><div class="bg-green-100 text-green-800 rounded-lg p-2"><strong>Matematica</strong><br><span class="text-xs">Neri</span></div></td>
+                                    <td class="p-3 text-center"><div class="bg-orange-100 text-orange-800 rounded-lg p-2"><strong>Ed. Fisica</strong><br><span class="text-xs">Greco</span></div></td>
+                                </tr>
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="p-4 font-medium text-gray-600">3° (10:00-11:00)</td>
+                                    <td class="p-3 text-center"><div class="bg-purple-100 text-purple-800 rounded-lg p-2"><strong>Inglese</strong><br><span class="text-xs">White</span></div></td>
+                                    <td class="p-3 text-center"><div class="bg-yellow-100 text-yellow-800 rounded-lg p-2"><strong>Storia</strong><br><span class="text-xs">Bianchi</span></div></td>
+                                    <td class="p-3 text-center"><div class="bg-blue-100 text-blue-800 rounded-lg p-2"><strong>Italiano</strong><br><span class="text-xs">Verdi</span></div></td>
+                                    <td class="p-3 text-center"><div class="bg-red-100 text-red-800 rounded-lg p-2"><strong>Fisica</strong><br><span class="text-xs">Ferrari</span></div></td>
+                                    <td class="p-3 text-center"><div class="bg-teal-100 text-teal-800 rounded-lg p-2"><strong>Scienze</strong><br><span class="text-xs">Marino</span></div></td>
+                                    <td class="p-3 text-center"><div class="bg-indigo-100 text-indigo-800 rounded-lg p-2"><strong>Arte</strong><br><span class="text-xs">Ricci</span></div></td>
+                                </tr>
+                                <tr class="border-b hover:bg-gray-50 bg-amber-50">
+                                    <td class="p-4 font-medium text-amber-600">Intervallo (11:00-11:15)</td>
+                                    <td colspan="6" class="p-3 text-center text-amber-600"><i class="fas fa-coffee mr-2"></i>Pausa</td>
+                                </tr>
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="p-4 font-medium text-gray-600">4° (11:15-12:15)</td>
+                                    <td class="p-3 text-center"><div class="bg-yellow-100 text-yellow-800 rounded-lg p-2"><strong>Storia</strong><br><span class="text-xs">Bianchi</span></div></td>
+                                    <td class="p-3 text-center"><div class="bg-teal-100 text-teal-800 rounded-lg p-2"><strong>Scienze</strong><br><span class="text-xs">Marino</span></div></td>
+                                    <td class="p-3 text-center"><div class="bg-green-100 text-green-800 rounded-lg p-2"><strong>Matematica</strong><br><span class="text-xs">Neri</span></div></td>
+                                    <td class="p-3 text-center"><div class="bg-blue-100 text-blue-800 rounded-lg p-2"><strong>Italiano</strong><br><span class="text-xs">Verdi</span></div></td>
+                                    <td class="p-3 text-center"><div class="bg-pink-100 text-pink-800 rounded-lg p-2"><strong>Filosofia</strong><br><span class="text-xs">Russo</span></div></td>
+                                    <td class="p-3 text-center"><div class="bg-gray-100 text-gray-800 rounded-lg p-2"><strong>Religione</strong><br><span class="text-xs">Don Paolo</span></div></td>
+                                </tr>
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="p-4 font-medium text-gray-600">5° (12:15-13:15)</td>
+                                    <td class="p-3 text-center"><div class="bg-red-100 text-red-800 rounded-lg p-2"><strong>Fisica</strong><br><span class="text-xs">Ferrari</span></div></td>
+                                    <td class="p-3 text-center"><div class="bg-pink-100 text-pink-800 rounded-lg p-2"><strong>Filosofia</strong><br><span class="text-xs">Russo</span></div></td>
+                                    <td class="p-3 text-center"><div class="bg-teal-100 text-teal-800 rounded-lg p-2"><strong>Scienze</strong><br><span class="text-xs">Marino</span></div></td>
+                                    <td class="p-3 text-center"><div class="bg-green-100 text-green-800 rounded-lg p-2"><strong>Matematica</strong><br><span class="text-xs">Neri</span></div></td>
+                                    <td class="p-3 text-center"><div class="bg-blue-100 text-blue-800 rounded-lg p-2"><strong>Italiano</strong><br><span class="text-xs">Verdi</span></div></td>
+                                    <td class="p-3 text-center"><div class="bg-gray-200 text-gray-500 rounded-lg p-2"><strong>-</strong></div></td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-4 font-medium text-gray-600">6° (13:15-14:15)</td>
+                                    <td class="p-3 text-center"><div class="bg-indigo-100 text-indigo-800 rounded-lg p-2"><strong>Arte</strong><br><span class="text-xs">Ricci</span></div></td>
+                                    <td class="p-3 text-center"><div class="bg-gray-200 text-gray-500 rounded-lg p-2"><strong>-</strong></div></td>
+                                    <td class="p-3 text-center"><div class="bg-gray-200 text-gray-500 rounded-lg p-2"><strong>-</strong></div></td>
+                                    <td class="p-3 text-center"><div class="bg-indigo-100 text-indigo-800 rounded-lg p-2"><strong>Arte</strong><br><span class="text-xs">Ricci</span></div></td>
+                                    <td class="p-3 text-center"><div class="bg-gray-200 text-gray-500 rounded-lg p-2"><strong>-</strong></div></td>
+                                    <td class="p-3 text-center"><div class="bg-gray-200 text-gray-500 rounded-lg p-2"><strong>-</strong></div></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ATTIVITÀ Section -->
+            <section id="attivita" class="section">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+                    <i class="fas fa-clipboard-check text-green-600"></i> Attività da Firmare
+                </h2>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Attività da firmare -->
+                    <div class="bg-white rounded-2xl p-6 shadow-lg">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                            <span class="w-3 h-3 bg-yellow-500 rounded-full animate-pulse"></span>
+                            In Attesa di Firma
+                        </h3>
+                        
+                        <div class="space-y-4" id="pending-activities">
+                            <div class="border-2 border-yellow-200 rounded-xl p-4 bg-yellow-50" id="activity-1">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <h4 class="font-bold text-gray-800">Uscita Didattica - Museo della Scienza</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Data: 20 Novembre 2024</p>
+                                        <p class="text-sm text-gray-600">Costo: €15,00</p>
+                                        <p class="text-sm text-gray-600">Scadenza firma: 12 Novembre 2024</p>
+                                    </div>
+                                    <span class="bg-yellow-200 text-yellow-800 text-xs px-2 py-1 rounded-full">In attesa</span>
+                                </div>
+                                <div class="mt-4 flex gap-2">
+                                    <button onclick="signActivity(1, true)" class="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition flex items-center justify-center gap-2">
+                                        <i class="fas fa-check"></i> Accetto
+                                    </button>
+                                    <button onclick="signActivity(1, false)" class="flex-1 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition flex items-center justify-center gap-2">
+                                        <i class="fas fa-times"></i> Rifiuto
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="border-2 border-yellow-200 rounded-xl p-4 bg-yellow-50" id="activity-2">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <h4 class="font-bold text-gray-800">Corso Pomeridiano di Inglese</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Periodo: Novembre - Gennaio</p>
+                                        <p class="text-sm text-gray-600">Orario: Martedì e Giovedì 14:30-16:00</p>
+                                        <p class="text-sm text-gray-600">Scadenza firma: 15 Novembre 2024</p>
+                                    </div>
+                                    <span class="bg-yellow-200 text-yellow-800 text-xs px-2 py-1 rounded-full">In attesa</span>
+                                </div>
+                                <div class="mt-4 flex gap-2">
+                                    <button onclick="signActivity(2, true)" class="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition flex items-center justify-center gap-2">
+                                        <i class="fas fa-check"></i> Accetto
+                                    </button>
+                                    <button onclick="signActivity(2, false)" class="flex-1 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition flex items-center justify-center gap-2">
+                                        <i class="fas fa-times"></i> Rifiuto
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Attività già firmate -->
+                    <div class="bg-white rounded-2xl p-6 shadow-lg">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-check-circle text-green-600"></i>
+                            Già Firmate
+                        </h3>
+                        
+                        <div class="space-y-4" id="signed-activities">
+                            <div class="border-2 border-green-200 rounded-xl p-4 bg-green-50">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <h4 class="font-bold text-gray-800">Gita Scolastica a Roma</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Data: 5-7 Dicembre 2024</p>
+                                        <p class="text-sm text-gray-600">Costo: €180,00</p>
+                                    </div>
+                                    <span class="bg-green-200 text-green-800 text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                                        <i class="fas fa-check"></i> Accettato
+                                    </span>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-3">Firmato il: 1 Novembre 2024</p>
+                            </div>
+
+                            <div class="border-2 border-red-200 rounded-xl p-4 bg-red-50">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <h4 class="font-bold text-gray-800">Corso di Teatro</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Periodo: Ottobre - Maggio</p>
+                                        <p class="text-sm text-gray-600">Orario: Venerdì 15:00-17:00</p>
+                                    </div>
+                                    <span class="bg-red-200 text-red-800 text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                                        <i class="fas fa-times"></i> Rifiutato
+                                    </span>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-3">Firmato il: 28 Ottobre 2024</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- RAPPRESENTANTI Section -->
+            <section id="rappresentanti" class="section">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+                    <i class="fas fa-users text-orange-600"></i> Rappresentanti d'Istituto
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-2xl p-6 shadow-lg card-hover transition-all text-center">
+                        <div class="w-24 h-24 mx-auto bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white text-3xl mb-4">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800">Luca Bianchi</h3>
+                        <p class="text-purple-600 font-medium">Rappresentante d'Istituto</p>
+                        <p class="text-sm text-gray-500 mt-1">Classe 5°B</p>
+                        <div class="mt-4 space-y-2">
+                            <a href="#" onclick="showSection('chat'); startChatWith('Luca Bianchi')" class="block w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition">
+                                <i class="fas fa-comment mr-2"></i> Messaggio
+                            </a>
+                            <a href="mailto:luca.bianchi@scuola.it" class="block w-full bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 transition">
+                                <i class="fas fa-envelope mr-2"></i> Email
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-6 shadow-lg card-hover transition-all text-center">
+                        <div class="w-24 h-24 mx-auto bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center text-white text-3xl mb-4">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800">Giulia Verdi</h3>
+                        <p class="text-pink-600 font-medium">Rappresentante d'Istituto</p>
+                        <p class="text-sm text-gray-500 mt-1">Classe 5°A</p>
+                        <div class="mt-4 space-y-2">
+                            <a href="#" onclick="showSection('chat'); startChatWith('Giulia Verdi')" class="block w-full bg-pink-600 text-white py-2 rounded-lg hover:bg-pink-700 transition">
+                                <i class="fas fa-comment mr-2"></i> Messaggio
+                            </a>
+                            <a href="mailto:giulia.verdi@scuola.it" class="block w-full bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 transition">
+                                <i class="fas fa-envelope mr-2"></i> Email
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-6 shadow-lg card-hover transition-all text-center">
+                        <div class="w-24 h-24 mx-auto bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white text-3xl mb-4">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800">Marco Neri</h3>
+                        <p class="text-blue-600 font-medium">Rappresentante Consulta</p>
+                        <p class="text-sm text-gray-500 mt-1">Classe 4°C</p>
+                        <div class="mt-4 space-y-2">
+                            <a href="#" onclick="showSection('chat'); startChatWith('Marco Neri')" class="block w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
+                                <i class="fas fa-comment mr-2"></i> Messaggio
+                            </a>
+                            <a href="mailto:marco.neri@scuola.it" class="block w-full bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 transition">
+                                <i class="fas fa-envelope mr-2"></i> Email
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rappresentanti di Classe -->
+                <h3 class="text-2xl font-bold text-gray-800 mt-10 mb-6 flex items-center gap-3">
+                    <i class="fas fa-user-friends text-green-600"></i> Rappresentanti di Classe - <span id="rappresentanti-class">4°A</span>
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-2xl p-6 shadow-lg flex items-center gap-4">
+                        <div class="w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white text-xl">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-bold text-gray-800">Anna Russo</h3>
+                            <p class="text-green-600 text-sm">Rappresentante di Classe</p>
+                        </div>
+                        <button onclick="showSection('chat'); startChatWith('Anna Russo')" class="bg-green-600 text-white p-3 rounded-full hover:bg-green-700 transition">
+                            <i class="fas fa-comment"></i>
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-6 shadow-lg flex items-center gap-4">
+                        <div class="w-16 h-16 bg-gradient-to-br from-teal-400 to-teal-600 rounded-full flex items-center justify-center text-white text-xl">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-bold text-gray-800">Francesco Marino</h3>
+                            <p class="text-teal-600 text-sm">Rappresentante di Classe</p>
+                        </div>
+                        <button onclick="showSection('chat'); startChatWith('Francesco Marino')" class="bg-teal-600 text-white p-3 rounded-full hover:bg-teal-700 transition">
+                            <i class="fas fa-comment"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CHAT Section -->
+            <section id="chat" class="section">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+                    <i class="fas fa-comments text-indigo-600"></i> Messaggi
+                </h2>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px]">
+                    <!-- Contacts List -->
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                        <div class="p-4 border-b bg-gray-50">
+                            <input type="text" placeholder="Cerca contatto..." class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div class="overflow-y-auto h-[520px]">
+                            <div onclick="selectContact('Luca Bianchi', 'Rappresentante d\'Istituto')" class="contact-item p-4 border-b hover:bg-indigo-50 cursor-pointer transition flex items-center gap-3">
+                                <div class="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center text-white">L</div>
+                                <div class="flex-1">
+                                    <p class="font-semibold">Luca Bianchi</p>
+                                    <p class="text-sm text-gray-500 truncate">Ciao! Per l'assemblea...</p>
+                                </div>
+                                <span class="bg-indigo-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">2</span>
+                            </div>
+                            <div onclick="selectContact('Giulia Verdi', 'Rappresentante d\'Istituto')" class="contact-item p-4 border-b hover:bg-indigo-50 cursor-pointer transition flex items-center gap-3">
+                                <div class="w-12 h-12 bg-pink-500 rounded-full flex items-center justify-center text-white">G</div>
+                                <div class="flex-1">
+                                    <p class="font-semibold">Giulia Verdi</p>
+                                    <p class="text-sm text-gray-500 truncate">Ok, perfetto!</p>
+                                </div>
+                            </div>
+                            <div onclick="selectContact('Anna Russo', 'Rappresentante di Classe')" class="contact-item p-4 border-b hover:bg-indigo-50 cursor-pointer transition flex items-center gap-3">
+                                <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white">A</div>
+                                <div class="flex-1">
+                                    <p class="font-semibold">Anna Russo</p>
+                                    <p class="text-sm text-gray-500 truncate">Ricordati il compito...</p>
+                                </div>
+                                <span class="bg-indigo-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">3</span>
+                            </div>
+                            <div onclick="selectContact('Francesco Marino', 'Rappresentante di Classe')" class="contact-item p-4 border-b hover:bg-indigo-50 cursor-pointer transition flex items-center gap-3">
+                                <div class="w-12 h-12 bg-teal-500 rounded-full flex items-center justify-center text-white">F</div>
+                                <div class="flex-1">
+                                    <p class="font-semibold">Francesco Marino</p>
+                                    <p class="text-sm text-gray-500 truncate">Hai visto la circolare?</p>
+                                </div>
+                            </div>
+                            <div onclick="selectContact('Classe 4°A', 'Gruppo Classe')" class="contact-item p-4 border-b hover:bg-indigo-50 cursor-pointer transition flex items-center gap-3">
+                                <div class="w-12 h-12 bg-indigo-500 rounded-full flex items-center justify-center text-white"><i class="fas fa-users"></i></div>
+                                <div class="flex-1">
+                                    <p class="font-semibold">Classe 4°A</p>
+                                    <p class="text-sm text-gray-500 truncate">Paolo: Domani verifica!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chat Window -->
+                    <div class="lg:col-span-2 bg-white rounded-2xl shadow-lg flex flex-col overflow-hidden">
+                        <div id="chat-header" class="p-4 border-b bg-gradient-to-r from-indigo-500 to-purple-500 text-white flex items-center gap-3">
+                            <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">L</div>
+                            <div>
+                                <p class="font-semibold" id="chat-contact-name">Luca Bianchi</p>
+                                <p class="text-sm text-white/70" id="chat-contact-role">Rappresentante d'Istituto</p>
+                            </div>
+                        </div>
+                        
+                        <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+                            <div class="message-bubble flex justify-start">
+                                <div class="bg-white rounded-2xl rounded-bl-none p-3 shadow max-w-xs">
+                                    <p>Ciao! Volevo avvisarti dell'assemblea di venerdì</p>
+                                    <p class="text-xs text-gray-400 mt-1">10:30</p>
+                                </div>
+                            </div>
+                            <div class="message-bubble flex justify-end">
+                                <div class="bg-indigo-600 text-white rounded-2xl rounded-br-none p-3 shadow max-w-xs">
+                                    <p>Ciao! Sì, ho visto la circolare. A che ora inizia?</p>
+                                    <p class="text-xs text-white/70 mt-1">10:32</p>
+                                </div>
+                            </div>
+                            <div class="message-bubble flex justify-start">
+                                <div class="bg-white rounded-2xl rounded-bl-none p-3 shadow max-w-xs">
+                                    <p>Inizia alle 9:00 in Aula Magna. Vorremmo discutere della gita di fine anno</p>
+                                    <p class="text-xs text-gray-400 mt-1">10:35</p>
+                                </div>
+                            </div>
+                            <div class="message-bubble flex justify-end">
+                                <div class="bg-indigo-600 text-white rounded-2xl rounded-br-none p-3 shadow max-w-xs">
+                                    <p>Perfetto, ci sarò! Grazie per l'avviso 👍</p>
+                                    <p class="text-xs text-white/70 mt-1">10:36</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 border-t bg-white">
+                            <div class="flex gap-2">
+                                <input type="text" id="message-input" placeholder="Scrivi un messaggio..." class="flex-1 px-4 py-3 rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" onkeypress="if(event.key === 'Enter') sendMessage()">
+                                <button onclick="sendMessage()" class="bg-indigo-600 text-white p-3 rounded-full hover:bg-indigo-700 transition">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- IMPOSTAZIONI Section -->
+            <section id="impostazioni" class="section">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+                    <i class="fas fa-cog text-gray-600"></i> Impostazioni
+                </h2>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Profilo -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <div class="bg-white rounded-2xl p-6 shadow-lg">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                <i class="fas fa-user-circle text-purple-600"></i> Profilo Utente
+                            </h3>
+                            
+                            <div class="flex flex-col md:flex-row gap-6">
+                                <div class="flex flex-col items-center">
+                                    <div id="settings-avatar" class="w-32 h-32 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white text-4xl mb-3">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <button class="text-purple-600 text-sm hover:text-purple-700">
+                                        <i class="fas fa-camera mr-1"></i> Cambia foto
+                                    </button>
+                                </div>
+                                
+                                <div class="flex-1 space-y-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+                                            <input type="text" id="settings-nome" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500" value="">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Cognome</label>
+                                            <input type="text" id="settings-cognome" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500" value="">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Email Scolastica</label>
+                                        <input type="email" id="settings-email" class="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50" readonly>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Classe</label>
+                                        <input type="text" id="settings-classe" class="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-6 flex justify-end">
+                                <button onclick="saveProfile()" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition">
+                                    <i class="fas fa-save mr-2"></i> Salva Modifiche
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Sicurezza -->
+                        <div class="bg-white rounded-2xl p-6 shadow-lg">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                <i class="fas fa-shield-alt text-green-600"></i> Sicurezza
+                            </h3>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Password Attuale</label>
+                                    <input type="password" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="••••••••">
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Nuova Password</label>
+                                        <input type="password" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="••••••••">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Conferma Password</label>
+                                        <input type="password" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="••••••••">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-6 flex justify-end">
+                                <button onclick="showToast('Password aggiornata con successo!')" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition">
+                                    <i class="fas fa-key mr-2"></i> Cambia Password
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preferenze -->
+                    <div class="space-y-6">
+                        <div class="bg-white rounded-2xl p-6 shadow-lg">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                <i class="fas fa-bell text-yellow-600"></i> Notifiche
+                            </h3>
+                            
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="font-medium text-gray-800">Circolari</p>
+                                        <p class="text-sm text-gray-500">Nuove circolari pubblicate</p>
+                                    </div>
+                                    <button onclick="toggleSwitch(this)" class="toggle-switch active w-12 h-6 bg-gray-300 rounded-full relative cursor-pointer">
+                                        <div class="toggle-dot absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform"></div>
+                                    </button>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="font-medium text-gray-800">Attività</p>
+                                        <p class="text-sm text-gray-500">Nuove attività da firmare</p>
+                                    </div>
+                                    <button onclick="toggleSwitch(this)" class="toggle-switch active w-12 h-6 bg-gray-300 rounded-full relative cursor-pointer">
+                                        <div class="toggle-dot absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform"></div>
+                                    </button>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="font-medium text-gray-800">Messaggi</p>
+                                        <p class="text-sm text-gray-500">Nuovi messaggi ricevuti</p>
+                                    </div>
+                                    <button onclick="toggleSwitch(this)" class="toggle-switch active w-12 h-6 bg-gray-300 rounded-full relative cursor-pointer">
+                                        <div class="toggle-dot absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform"></div>
+                                    </button>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="font-medium text-gray-800">Email</p>
+                                        <p class="text-sm text-gray-500">Ricevi notifiche via email</p>
+                                    </div>
+                                    <button onclick="toggleSwitch(this)" class="toggle-switch w-12 h-6 bg-gray-300 rounded-full relative cursor-pointer">
+                                        <div class="toggle-dot absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform"></div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-2xl p-6 shadow-lg">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                <i class="fas fa-palette text-blue-600"></i> Aspetto
+                            </h3>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Tema Colore</label>
+                                    <div class="flex gap-2">
+                                        <button onclick="changeTheme('purple')" class="w-8 h-8 rounded-full bg-purple-600 ring-2 ring-offset-2 ring-purple-600"></button>
+                                        <button onclick="changeTheme('blue')" class="w-8 h-8 rounded-full bg-blue-600 hover:ring-2 hover:ring-offset-2 hover:ring-blue-600"></button>
+                                        <button onclick="changeTheme('green')" class="w-8 h-8 rounded-full bg-green-600 hover:ring-2 hover:ring-offset-2 hover:ring-green-600"></button>
+                                        <button onclick="changeTheme('pink')" class="w-8 h-8 rounded-full bg-pink-600 hover:ring-2 hover:ring-offset-2 hover:ring-pink-600"></button>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Dimensione Testo</label>
+                                    <select class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <option>Piccolo</option>
+                                        <option selected>Normale</option>
+                                        <option>Grande</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-2xl p-6 shadow-lg">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                <i class="fas fa-info-circle text-gray-600"></i> Informazioni
+                            </h3>
+                            
+                            <div class="space-y-2 text-sm text-gray-600">
+                                <p><strong>Versione:</strong> 1.0.0</p>
+                                <p><strong>Anno Scolastico:</strong> 2024/2025</p>
+                                <p><strong>Ultimo accesso:</strong> <span id="last-login">-</span></p>
+                            </div>
+                            
+                            <div class="mt-4 pt-4 border-t">
+                                <button onclick="handleLogout()" class="w-full bg-red-100 text-red-600 py-2 rounded-lg hover:bg-red-200 transition flex items-center justify-center gap-2">
+                                    <i class="fas fa-sign-out-alt"></i> Esci dall'account
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-2 z-50">
+        <i class="fas fa-check-circle"></i>
+        <span id="toast-message">Operazione completata!</span>
+    </div>
+
+    <script>
+        // Database utenti simulato
+        const users = {
+            'marco.rossi@studenti.scuola.it': {
+                password: 'demo123',
+                nome: 'Marco',
+                cognome: 'Rossi',
+                classe: '4°A',
+                avatar: 'M'
+            },
+            'giulia.bianchi@studenti.scuola.it': {
+                password: 'demo123',
+                nome: 'Giulia',
+                cognome: 'Bianchi',
+                classe: '3°B',
+                avatar: 'G'
+            },
+            'luca.verdi@studenti.scuola.it': {
+                password: 'demo123',
+                nome: 'Luca',
+                cognome: 'Verdi',
+                classe: '5°C',
+                avatar: 'L'
+            }
+        };
+
+        let currentUser = null;
+
+        // Check if user is already logged in
+        function checkAuth() {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showMainApp();
+            }
+        }
+
+        // Handle Login
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const remember = document.getElementById('remember-me').checked;
+            
+            if (users[email] && users[email].password === password) {
+                currentUser = {
+                    email: email,
+                    ...users[email],
+                    lastLogin: new Date().toLocaleString('it-IT')
+                };
+                
+                if (remember) {
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                }
+                
+                document.getElementById('login-error').classList.add('hidden');
+                showMainApp();
+            } else {
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        }
+
+        // Handle Logout
+        function handleLogout() {
+            localStorage.removeItem('currentUser');
+            currentUser = null;
+            document.getElementById('login-page').classList.remove('hidden');
+            document.getElementById('main-app').classList.add('hidden');
+            document.getElementById('login-form').reset();
+            showToast('Logout effettuato');
+        }
+
+        // Show Main App
+        function showMainApp() {
+            document.getElementById('login-page').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+            
+            // Update UI with user info
+            const fullName = `${currentUser.nome} ${currentUser.cognome}`;
+            document.getElementById('sidebar-username').textContent = fullName;
+            document.getElementById('sidebar-class').textContent = `Classe ${currentUser.classe}`;
+            document.getElementById('home-username').textContent = currentUser.nome;
+            document.getElementById('orario-class').textContent = currentUser.classe;
+            document.getElementById('rappresentanti-class').textContent = currentUser.classe;
+            
+            // Update settings
+            document.getElementById('settings-nome').value = currentUser.nome;
+            document.getElementById('settings-cognome').value = currentUser.cognome;
+            document.getElementById('settings-email').value = currentUser.email;
+            document.getElementById('settings-classe').value = currentUser.classe;
+            document.getElementById('last-login').textContent = currentUser.lastLogin || new Date().toLocaleString('it-IT');
+            
+            // Update avatar
+            document.getElementById('sidebar-avatar').innerHTML = currentUser.avatar;
+            document.getElementById('settings-avatar').innerHTML = currentUser.avatar;
+            
+            showToast(`Benvenuto, ${currentUser.nome}!`);
+        }
+
+        // Fill Demo Credentials
+        function fillDemo(email, password) {
+            document.getElementById('login-email').value = email;
+            document.getElementById('login-password').value = password;
+        }
+
+        // Toggle Password Visibility
+        function togglePassword() {
+            const input = document.getElementById('login-password');
+            const icon = document.getElementById('password-toggle-icon');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        // Show Section
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            event?.target?.closest('.nav-item')?.classList.add('active');
+
+            // Close mobile sidebar
+            if (window.innerWidth < 768) {
+                document.getElementById('sidebar').classList.add('-translate-x-full');
+            }
+        }
+
+        // Toggle Sidebar (Mobile)
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+        }
+
+        // Toggle Switch
+        function toggleSwitch(element) {
+            element.classList.toggle('active');
+        }
+
+        // Save Profile
+        function saveProfile() {
+            const nome = document.getElementById('settings-nome').value;
+            const cognome = document.getElementById('settings-cognome').value;
+            
+            if (currentUser) {
+                currentUser.nome = nome;
+                currentUser.cognome = cognome;
+                currentUser.avatar = nome.charAt(0).toUpperCase();
+                
+                // Update UI
+                const fullName = `${nome} ${cognome}`;
+                document.getElementById('sidebar-username').textContent = fullName;
+                document.getElementById('home-username').textContent = nome;
+                document.getElementById('sidebar-avatar').innerHTML = currentUser.avatar;
+                document.getElementById('settings-avatar').innerHTML = currentUser.avatar;
+                
+                // Save to localStorage
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                
+                showToast('Profilo aggiornato con successo!');
+            }
+        }
+
+        // Change Theme (placeholder)
+        function changeTheme(color) {
+            showToast(`Tema ${color} selezionato!`);
+        }
+
+        // Sign Activity
+        function signActivity(activityId, accepted) {
+            const activity = document.getElementById(`activity-${activityId}`);
+            const signedContainer = document.getElementById('signed-activities');
+            
+            const title = activity.querySelector('h4').textContent;
+            const details = activity.querySelectorAll('.text-sm');
+            
+            const newItem = document.createElement('div');
+            newItem.className = `border-2 ${accepted ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'} rounded-xl p-4`;
+            newItem.innerHTML = `
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h4 class="font-bold text-gray-800">${title}</h4>
+                        <p class="text-sm text-gray-600 mt-1">${details[0]?.textContent || ''}</p>
+                        <p class="text-sm text-gray-600">${details[1]?.textContent || ''}</p>
+                    </div>
+                    <span class="${accepted ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'} text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                        <i class="fas fa-${accepted ? 'check' : 'times'}"></i> ${accepted ? 'Accettato' : 'Rifiutato'}
+                    </span>
+                </div>
+                <p class="text-xs text-gray-500 mt-3">Firmato il: ${new Date().toLocaleDateString('it-IT')}</p>
+            `;
+            
+            activity.style.animation = 'fadeIn 0.3s ease reverse';
+            setTimeout(() => {
+                activity.remove();
+                signedContainer.insertBefore(newItem, signedContainer.firstChild);
+                showToast(accepted ? 'Attività accettata!' : 'Attività rifiutata');
+            }, 300);
+        }
+
+        // Chat Functions
+        function selectContact(name, role) {
+            document.getElementById('chat-contact-name').textContent = name;
+            document.getElementById('chat-contact-role').textContent = role;
+            
+            const messagesContainer = document.getElementById('chat-messages');
+            messagesContainer.innerHTML = `
+                <div class="message-bubble flex justify-start">
+                    <div class="bg-white rounded-2xl rounded-bl-none p-3 shadow max-w-xs">
+                        <p>Ciao! Come posso aiutarti?</p>
+                        <p class="text-xs text-gray-400 mt-1">${new Date().toLocaleTimeString('it-IT', {hour: '2-digit', minute: '2-digit'})}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function startChatWith(name) {
+            selectContact(name, 'Rappresentante');
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('message-input');
+            const message = input.value.trim();
+            
+            if (message) {
+                const messagesContainer = document.getElementById('chat-messages');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message-bubble flex justify-end';
+                messageDiv.innerHTML = `
+                    <div class="bg-indigo-600 text-white rounded-2xl rounded-br-none p-3 shadow max-w-xs">
+                        <p>${message}</p>
+                        <p class="text-xs text-white/70 mt-1">${new Date().toLocaleTimeString('it-IT', {hour: '2-digit', minute: '2-digit'})}</p>
+                    </div>
+                `;
+                messagesContainer.appendChild(messageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                input.value = '';
+
+                setTimeout(() => {
+                    const responseDiv = document.createElement('div');
+                    responseDiv.className = 'message-bubble flex justify-start';
+                    responseDiv.innerHTML = `
+                        <div class="bg-white rounded-2xl rounded-bl-none p-3 shadow max-w-xs">
+                            <p>Grazie per il messaggio! Ti risponderò il prima possibile 😊</p>
+                            <p class="text-xs text-gray-400 mt-1">${new Date().toLocaleTimeString('it-IT', {hour: '2-digit', minute: '2-digit'})}</p>
+                        </div>
+                    `;
+                    messagesContainer.appendChild(responseDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }, 1000);
+            }
+        }
+
+        // Toast Notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').textContent = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+        });
+    </script>
+</body>
+</html>
