@@ -173,9 +173,15 @@
                 <a href="#" onclick="showSection('rappresentanti')" class="nav-item flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition">
                     <i class="fas fa-users w-5"></i> Rappresentanti
                 </a>
+                <a href="#" onclick="showSection('bacheca')" 
+   class="nav-item flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition">
+    <i class="fas fa-bullhorn w-5"></i> Bacheca
+</a>
+
                 <a href="#" onclick="showSection('chat')" class="nav-item flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition">
                     <i class="fas fa-comments w-5"></i> Chat
                 </a>
+
             </nav>
 
             <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-white/20 space-y-2">
@@ -686,6 +692,45 @@
                 </div>
             </section>
 
+
+            <!-- BACHECA DEI RAPPRESENTANTI -->
+<section id="bacheca" class="hidden p-6">
+  <h2 class="text-2xl font-bold mb-4">📢 Bacheca dei rappresentanti</h2>
+
+  <!-- Lista dei post -->
+  <div id="bacheca-posts" class="space-y-4 mb-6">
+    <div class="bg-white p-4 rounded-xl shadow">
+      <h3 class="font-semibold">Benvenuti nella bacheca</h3>
+      <p>Qui i rappresentanti pubblicheranno comunicazioni ufficiali.</p>
+      <span class="text-sm text-gray-500">Rappresentanti d’istituto</span>
+    </div>
+  </div>
+
+  <!-- Form visibile SOLO ai rappresentanti -->
+  <div id="bacheca-form" class="hidden">
+    <input
+      id="titoloPost"
+      type="text"
+      class="border p-2 w-full mb-2 rounded"
+      placeholder="Titolo comunicazione"
+    />
+
+    <textarea
+      id="contenutoPost"
+      class="border p-2 w-full mb-2 rounded"
+      placeholder="Scrivi la comunicazione..."
+    ></textarea>
+
+    <button
+      onclick="aggiungiPostBacheca()"
+      class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+    >
+      Pubblica
+    </button>
+  </div>
+</section>
+
+
             <!-- CHAT Section -->
             <section id="chat" class="section">
                 <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center gap-3">
@@ -966,6 +1011,31 @@
                     </div>
                 </div>
             </section>
+            <section id="bacheca" class="p-6">
+  <div class="bg-white rounded-xl shadow p-6">
+    <h2 class="text-2xl font-bold mb-4 text-gray-800">
+      📢 Bacheca dei rappresentanti
+    </h2>
+
+    <p class="text-gray-600 mb-4">
+      Qui vengono pubblicate le comunicazioni ufficiali dei rappresentanti.
+    </p>
+
+    <div id="bacheca-posts" class="space-y-4">
+      <div class="border rounded-lg p-4">
+        <h3 class="font-semibold text-gray-800">
+          Assemblea d’istituto
+        </h3>
+        <p class="text-gray-700">
+          Venerdì 15 si terrà l’assemblea d’istituto in aula magna.
+        </p>
+        <span class="text-sm text-gray-500">
+          Rappresentanti d’istituto
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
         </main>
     </div>
 
@@ -1250,6 +1320,55 @@
         document.addEventListener('DOMContentLoaded', () => {
             checkAuth();
         });
+
+         /**
+   * Simulazione ruolo utente
+   * true  = rappresentante
+   * false = studente
+   */
+  let isRappresentante = true;
+
+  /**
+   * Mostra il form della bacheca solo ai rappresentanti
+   */
+  window.addEventListener("load", () => {
+    if (isRappresentante) {
+      document
+        .getElementById("bacheca-form")
+        .classList.remove("hidden");
+    }
+  });
+
+  /**
+   * Aggiunge un nuovo post alla bacheca
+   */
+  function aggiungiPostBacheca() {
+    const titolo = document.getElementById("titoloPost").value;
+    const contenuto = document.getElementById("contenutoPost").value;
+
+    // Controllo campi vuoti
+    if (titolo === "" || contenuto === "") {
+      alert("Compila tutti i campi");
+      return;
+    }
+
+    // Creazione del post
+    const post = document.createElement("div");
+    post.className = "bg-white p-4 rounded-xl shadow";
+
+    post.innerHTML = `
+      <h3 class="font-semibold">${titolo}</h3>
+      <p>${contenuto}</p>
+      <span class="text-sm text-gray-500">Rappresentanti</span>
+    `;
+
+    // Inserisce il post in cima alla bacheca
+    document.getElementById("bacheca-posts").prepend(post);
+
+    // Reset campi
+    document.getElementById("titoloPost").value = "";
+    document.getElementById("contenutoPost").value = "";
+  }
     </script>
 </body>
 </html>
